@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("👋 Streamlit Cloud 데모 앱")
+st.title("👋 Streamlit Cloud 데모 앱2")
 
 name = st.text_input("이름을 입력하세요:")
 
