@@ -9,11 +9,15 @@ st.set_page_config(page_title="Safe Streamlit App", layout="wide")
 st.title("Safe Streamlit 앱")
 st.write("아래 영역은 Teachable Machine 모델을 활용한 커스텀 컨트롤 입니다.")
 
-# HTML 및 JavaScript 코드 (원래 index.html의 내용)
+# HTML 및 JavaScript 코드 (index.html 내용 수정)
 html_code = """
 <html>
   <head>
     <meta charset="UTF-8">
+    <style>
+      body { font-family: Arial, sans-serif; }
+      #action-output { font-size: 24px; font-weight: bold; color: blue; margin-top: 10px; }
+    </style>
   </head>
   <body>
     <div>Custom control based on Teachable Machine</div>
@@ -21,6 +25,8 @@ html_code = """
     <button type="button" onclick="init()">Load Model</button>
     <div><canvas id="canvas"></canvas></div>
     <div id="label-container"></div>
+    <!-- 추가: 인식된 동작 결과 표시 영역 -->
+    <div id="action-output">인식된 동작: None</div>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
     <script type="text/javascript">
@@ -57,7 +63,7 @@ html_code = """
           }
       }
 
-      // 반복 함수: 웹캠 프레임 업데이트 및 예측
+      // 반복 함수: 웹캠 프레임 업데이트 및 예측 수행
       async function loop(timestamp) {
           webcam.update();
           await predict();
@@ -71,14 +77,14 @@ html_code = """
       async function predict() {
           // 포즈 예측
           const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
-          // 클래스 예측
+          // 클래스 예측 (각 클래스의 확률)
           const prediction = await model.predict(posenetOutput);
 
           let action_index = -1;
           let action_prop = -1;
+          // 예측된 클래스 중 확률이 가장 높은 인덱스 선택
           for (let i = 0; i < maxPredictions; i++) {
               const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-              // 가장 높은 확률의 예측 선택
               if (prediction[i].probability > action_prop) {
                   action_prop = prediction[i].probability;
                   action_index = i;
@@ -95,9 +101,23 @@ html_code = """
           drawPose(pose);
       }
 
-      // 액션 전송 함수 (원래는 서버 API 호출하던 부분을 콘솔 출력으로 대체)
+      // sendAction 함수: 인식된 action_index에 따라 동작 이름을 출력함
       function sendAction(action_index) {
-          console.log("Detected action index:", action_index);
+          let actionName = "";
+          // 아래 매핑은 Teachable Machine 모델 예측 순서에 맞게 수정 필요
+          if (action_index === 0) {
+              actionName = "Up (위)";
+          } else if (action_index === 1) {
+              actionName = "Down (아래)";
+          } else if (action_index === 2) {
+              actionName = "Right (오른쪽)";
+          } else if (action_index === 3) {
+              actionName = "Left (왼쪽)";
+          } else {
+              actionName = "Unknown Action";
+          }
+          document.getElementById("action-output").innerHTML = "인식된 동작: " + actionName;
+          console.log("Detected action index:", action_index, actionName);
       }
 
       // 포즈 그리기 함수
@@ -116,8 +136,9 @@ html_code = """
 </html>
 """
 
-# st.components.v1.html를 사용하여 HTML 코드 삽입
-components.html(html_code, height=650)
+# Streamlit에 HTML 삽입
+components.html(html_code, height=750)
+
 
 
 
