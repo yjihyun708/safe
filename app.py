@@ -1,8 +1,30 @@
-import streamlit as st
+import pydirectinput as pag
+from flask import Flask, jsonify, make_response, render_template, request
 
-st.title("👋 Streamlit Cloud 데모 앱4")
+# please import pydirectinput instead of pyautogui for windows user
+# import pydirectinput as pag
 
-name = st.text_input("이름을 입력하세요:")
+app = Flask(__name__)
 
-if name:
-    st.success(f"{name}님, 환영합니다! 😊")
+@app.route("/", methods=["GET"])
+def main():
+    return render_template('index.html')
+
+@app.route("/action", methods=["GET"])
+def action():
+    index = request.args.get('index')
+    print("index : " + index)
+
+    if index == '1':
+        pag.press('up')
+    elif index == '2':
+        pag.press('down')
+    elif index == '3':
+        pag.press('right')
+    elif index == '4':
+        pag.press('left')
+    
+    return make_response(jsonify({"status number": 200}), 200)
+  
+if __name__ == "__main__":
+  app.run(port=5001)
