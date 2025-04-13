@@ -1,60 +1,148 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Disaster Pose Core Service</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disaster Pose Trainer - 메인</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; }
     body {
-      margin: 0; font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1f2937;
-      display: flex; flex-direction: column; align-items: center; padding: 2rem;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: #f9fafb;
+      scroll-behavior: smooth;
     }
-    h1 {
-      font-size: 2rem; margin-bottom: 1rem; color: #2563eb;
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      z-index: 1000;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 20px;
+    }
+    section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 100px 20px 60px;
+    }
+    h2 {
+      color: #1f2937;
     }
     canvas {
-      margin: 1rem 0; border-radius: 10px; background: #fff;
+      border-radius: 10px;
+      background: white;
+      margin-top: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    #label-container > div {
-      font-size: 1rem; margin-top: 0.2rem;
+    #label-container div {
+      font-size: 1rem;
+      color: #374151;
+    }
+    .review-form textarea {
+      width: 100%; padding: 10px; margin-top: 10px;
+      border-radius: 8px; border: 1px solid #ccc;
+      resize: vertical; min-height: 80px;
+    }
+    .review-form button {
+      background-color: #2563eb; color: white;
+      padding: 10px 20px; margin-top: 10px;
+      border: none; border-radius: 8px; cursor: pointer;
+    }
+    footer {
+      background: #1f2937; color: white;
+      text-align: center; padding: 20px 0;
     }
   </style>
 </head>
 <body>
-  <h1>포즈 인식 훈련</h1>
-  <div>
+  <nav>
+    <div>👋 {{ username }}님 환영합니다</div>
+    <div>
+      <a href="#core-service">서비스</a>
+      <a href="#how-it-works">방법</a>
+      <a href="#contact">문의</a>
+      <a href="/logout">로그아웃</a>
+    </div>
+  </nav>
+
+  <section id="core-service">
+    <h2>2. 포즈 인식 서비스</h2>
+    <p>Teachable Machine 기반으로 훈련 자세를 실시간 인식합니다.</p>
     <canvas id="canvas"></canvas>
     <div id="label-container"></div>
-  </div>
+  </section>
+
+  <section id="how-it-works">
+    <h2>3. 사용 방법</h2>
+    <p>
+      1. 로그인 후 자동으로 사용자 모델 키가 불러와집니다.<br>
+      2. 웹캠을 통해 실시간 포즈 인식이 시작됩니다.<br>
+      3. 인식된 자세는 서버로 전송되어 동작 제어에 활용됩니다.
+    </p>
+    <canvas id="snapshot" width="300" height="300" style="border-radius: 10px; display:block; margin:auto; border:1px solid #ccc;"></canvas>
+  </section>
+
+  <section id="reviews">
+    <h2>6. 후기</h2>
+    <form class="review-form" onsubmit="submitReview(event)">
+      <textarea id="reviewText" placeholder="훈련을 해본 소감을 입력해주세요..."></textarea>
+      <button type="submit">제출</button>
+    </form>
+    <div id="review-list"></div>
+  </section>
+
+  <section id="contact">
+    <h2>7. 문의처</h2>
+    <p>개발자: 장덕진<br>이메일: jdj931013@ptsaebit.es.kr</p>
+  </section>
+
+  <footer>
+    &copy; 2025 Disaster Pose Trainer. All rights reserved.
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
   <script>
+    const tm_model_key = "{{ model_key }}";
+    sessionStorage.setItem("modelKey", tm_model_key);
+
     let model, webcam, ctx, labelContainer, maxPredictions;
 
-    async function init() {
-      const tm_model_key = sessionStorage.getItem('modelKey');
-      const URL = `https://teachablemachine.withgoogle.com/models/${tm_model_key}/`;
-      const modelURL = URL + \"model.json\";
-      const metadataURL = URL + \"metadata.json\";
+    window.onload = () => {
+      document.getElementById("core-service").scrollIntoView({ behavior: 'smooth' });
+      setTimeout(init, 800);
+    };
 
-      model = await tmPose.load(modelURL, metadataURL);
+    async function init() {
+      const URL = `https://teachablemachine.withgoogle.com/models/${tm_model_key}/`;
+      model = await tmPose.load(URL + "model.json", URL + "metadata.json");
       maxPredictions = model.getTotalClasses();
 
-      const size = 300;
-      webcam = new tmPose.Webcam(size, size, true);
+      webcam = new tmPose.Webcam(300, 300, true);
       await webcam.setup();
       await webcam.play();
       window.requestAnimationFrame(loop);
 
-      const canvas = document.getElementById(\"canvas\");
-      canvas.width = size; canvas.height = size;
-      ctx = canvas.getContext(\"2d\");
-      labelContainer = document.getElementById(\"label-container\");
+      const canvas = document.getElementById("canvas");
+      canvas.width = 300;
+      canvas.height = 300;
+      ctx = canvas.getContext("2d");
+
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = "";
       for (let i = 0; i < maxPredictions; i++) {
-        labelContainer.appendChild(document.createElement(\"div\"));
+        labelContainer.appendChild(document.createElement("div"));
       }
     }
 
@@ -62,9 +150,12 @@
       webcam.update();
       await predict();
       window.requestAnimationFrame(loop);
-    }
 
-    var prev_action_time = new Date().getTime();
+      // snapshot 캡처
+      const snapCanvas = document.getElementById('snapshot');
+      const snapCtx = snapCanvas.getContext("2d");
+      snapCtx.drawImage(webcam.canvas, 0, 0, snapCanvas.width, snapCanvas.height);
+    }
 
     async function predict() {
       const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
@@ -72,7 +163,7 @@
 
       let action_index = -1, action_prop = -1;
       for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction = prediction[i].className + \": \" + prediction[i].probability.toFixed(2);
+        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
         if (prediction[i].probability > action_prop) {
           action_prop = prediction[i].probability;
           action_index = i;
@@ -80,17 +171,8 @@
         labelContainer.childNodes[i].innerHTML = classPrediction;
       }
 
-      const cur_action_time = new Date().getTime();
-      if (cur_action_time - prev_action_time > 200) {
-        prev_action_time = cur_action_time;
-        sendAction(action_index);
-      }
-
+      await fetch('/action?index=' + action_index);
       drawPose(pose);
-    }
-
-    async function sendAction(index) {
-      await fetch(`/action?index=${index}`);
     }
 
     function drawPose(pose) {
@@ -102,7 +184,15 @@
       }
     }
 
-    window.onload = init;
+    function submitReview(event) {
+      event.preventDefault();
+      const text = document.getElementById("reviewText").value;
+      if (!text) return alert("내용을 입력해주세요");
+      const div = document.createElement("div");
+      div.textContent = `✅ ${text}`;
+      document.getElementById("review-list").appendChild(div);
+      document.getElementById("reviewText").value = "";
+    }
   </script>
 </body>
 </html>
