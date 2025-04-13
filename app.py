@@ -12,9 +12,14 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route("/main")
+def main():
+    return render_template("main.html")
+
 @app.route('/action', methods=['GET'])
 def action():
     index = request.args.get('index')
+    print(f"동작 인식됨: {index}")
     # print(f"[INFO] Received index: {index}")
 
     # time.sleep(2)  # 포커스 전환 시간
@@ -30,7 +35,8 @@ def action():
     else:
         return "Invalid index", 400
 
-    return f"Action {index} executed", 200
+    return "ok"
+    # return f"Action {index} executed", 200
 
 # if __name__ == '__main__':
 #     public_url = ngrok.connect(5000)

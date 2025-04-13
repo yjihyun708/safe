@@ -1,110 +1,290 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>재난 대비 포즈 훈련</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header, section, footer {
-            padding: 5vw 8vw;
-            margin: auto;
-        }
-        header {
-            background: #003366;
-            color: white;
-            text-align: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
-        }
-        section {
-            background: white;
-            margin-top: 4vw;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            color: #003366;
-        }
-        img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-        footer {
-            background: #003366;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 40px;
-        }
-        @media screen and (max-width: 768px) {
-            header, section {
-                padding: 6vw;
-            }
-            h1 {
-                font-size: 6vw;
-            }
-            h2 {
-                font-size: 5vw;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disaster Pose Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: #f9fafb;
+      scroll-behavior: smooth;
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #2563eb;
+      color: white;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px;
+      z-index: 1000;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    section {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 80px 20px;
+    }
+    h1, h2 {
+      color: #1f2937;
+    }
+    .intro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to right, #2563eb, #1d4ed8);
+      color: white;
+      text-align: center;
+      padding-top: 60px;
+    }
+    .intro input {
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      margin-top: 20px;
+      width: 300px;
+    }
+    .intro button {
+      padding: 12px 24px;
+      margin-top: 16px;
+      font-size: 1rem;
+      background: #1e40af;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    canvas {
+      border-radius: 8px;
+      background: white;
+      margin-top: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #label-container div {
+      font-size: 1rem;
+      color: #374151;
+    }
+    img.responsive {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      display: block;
+      margin: 20px auto;
+    }
+    footer {
+      background-color: #1f2937;
+      color: white;
+      text-align: center;
+      padding: 30px 0;
+    }
+    .review-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      min-height: 80px;
+    }
+    .review-form button {
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>재난 대비 포즈 인식 훈련</h1>
-        <p>Teachable Machine 기반 포즈 인식 웹 애플리케이션</p>
-    </header>
+  <nav>
+    <a href="#intro">Home</a>
+    <a href="#core-service">서비스</a>
+    <a href="#how-it-works">사용 방법</a>
+    <a href="#why-needed">필요성</a>
+    <a href="#examples">예시</a>
+    <a href="#reviews">후기</a>
+    <a href="#contact">문의</a>
+  </nav>
 
-    <section id="home">
-        <h2>1. 사용자 정보 입력</h2>
-        <img src="{{ url_for('static', filename='1_user_input.png') }}" alt="사용자 정보 입력">
-    </section>
+  <div class="intro" id="intro">
+    <h1>Disaster Pose Trainer</h1>
+    <p>AI 포즈 인식을 통한 재난 훈련 시뮬레이션</p>
+    <input type="text" id="tm_model_key" placeholder="Teachable Machine 모델 키 입력"/>
+    <button onclick="scrollToMain()">훈련 시작하기</button>
+  </div>
 
-    <section id="service">
-        <h2>2. 핵심 서비스</h2>
-        <p>Teachable Machine의 포즈 인식 기술을 활용하여 재난 상황에서의 반응 훈련을 가능하게 합니다.</p>
-        <img src="{{ url_for('static', filename='2_core_service.png') }}" alt="핵심 서비스">
-    </section>
+  <section id="core-service">
+    <h2>2. 핵심 서비스</h2>
+    <p>Teachable Machine 기반 포즈 인식으로 재난 대응 훈련 동작을 실시간으로 분석합니다.</p>
+    <canvas id="canvas"></canvas>
+    <div id="label-container"></div>
+  </section>
 
-    <section id="how-it-works">
-        <h2>3. 사용 방법과 원리</h2>
-        <p>1단계: 모델 키 입력 → 2단계: 웹캠 인식 시작 → 3단계: 인식 결과 확인 및 키 입력 전송</p>
-        <img src="{{ url_for('static', filename='3_how_it_works.png') }}" alt="사용 방법">
-    </section>
+  <section id="how-it-works">
+    <h2>3. 사용 방법 및 원리</h2>
+    <p>
+      1. 사용자 정보 입력 후 '훈련 시작하기' 클릭<br>
+      2. 웹캠이 자동으로 켜지고 포즈 인식 시작<br>
+      3. 인식된 포즈 결과가 실시간으로 표시되며 서버로 전송됩니다.
+    </p>
+  </section>
 
-    <section id="why-needed">
-        <h2>4. 왜 이 서비스가 필요한가요?</h2>
-        <p>반복적인 훈련을 위한 시뮬레이션 도구로 활용할 수 있으며, 실제 대피 훈련의 한계를 극복할 수 있습니다.</p>
-        <img src="{{ url_for('static', filename='4_why_needed.png') }}" alt="필요성 설명">
-    </section>
+  <section id="why-needed">
+    <h2>4. 왜 이 서비스가 필요한가요?</h2>
+    <p>
+      실제 재난은 자주 일어나지 않아 훈련이 부족한 경우가 많습니다.<br>
+      본 시스템은 언제 어디서나 반복 가능한 훈련을 가능하게 하며,<br>
+      실제 위기 상황에서의 대처 능력을 향상시킬 수 있도록 돕습니다.
+    </p>
+  </section>
 
-    <section id="examples">
-        <h2>5. 사용 예시 및 사례</h2>
-        <p>포즈를 취하면 해당 동작이 인식되어 실시간으로 키보드 입력으로 전송됩니다.</p>
-        <img src="{{ url_for('static', filename='5_example.png') }}" alt="사용 예시">
-    </section>
+  <section id="examples">
+    <h2>5. 사용 예시</h2>
+    <p>포즈 인식 훈련 중 사용자의 실제 동작이 아래에 표시됩니다. (웹캠 캡처 이미지)</p>
+    <canvas id="snapshot" width="300" height="300" style="border-radius: 10px; display:block; margin:auto; border:1px solid #ccc;"></canvas>
+  </section>
 
-    <section id="reviews">
-        <h2>6. 사용 후기</h2>
-        <img src="{{ url_for('static', filename='6_reviews.png') }}" alt="사용 후기">
-    </section>
+  <section id="reviews">
+    <h2>6. 사용자 후기</h2>
+    <p>여러분의 사용 후기를 남겨주세요!</p>
+    <form class="review-form" onsubmit="submitReview(event)">
+      <textarea id="reviewText" placeholder="여기에 후기를 입력해주세요..."></textarea>
+      <button type="submit">후기 제출</button>
+    </form>
+    <div id="review-list" style="margin-top:20px;"></div>
+  </section>
 
-    <section id="contact">
-        <h2>7. 문의처</h2>
-        <p><strong>개발자:</strong> 장덕진<br><strong>이메일:</strong> jdj931013@ptsaebit.es.kr</p>
-        <img src="{{ url_for('static', filename='7_contact.png') }}" alt="문의처">
-    </section>
+  <section id="contact">
+    <h2>7. 문의처</h2>
+    <p>
+      개발자: 장덕진<br>
+      이메일: jdj931013@ptsaebit.es.kr
+    </p>
+  </section>
 
-    <footer>
-        <p>&copy; 2025 Disaster Pose Trainer. All rights reserved.</p>
-    </footer>
+  <footer>
+    &copy; 2025 Disaster Pose Trainer. All rights reserved.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
+  <script>
+    function scrollToMain() {
+      const key = document.getElementById("tm_model_key").value.trim();
+      if (!key || key.length < 8) {
+        alert("유효한 모델 키를 입력해주세요 (8자 이상).");
+        return;
+      }
+      sessionStorage.setItem("modelKey", key);
+      document.getElementById("core-service").scrollIntoView({ behavior: 'smooth' });
+      setTimeout(init, 800);
+    }
+
+    let model, webcam, ctx, labelContainer, maxPredictions;
+
+    async function init() {
+      const tm_model_key = sessionStorage.getItem("modelKey");
+      const URL = `https://teachablemachine.withgoogle.com/models/${tm_model_key}/`;
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+
+      model = await tmPose.load(modelURL, metadataURL);
+      maxPredictions = model.getTotalClasses();
+
+      const size = 300;
+      webcam = new tmPose.Webcam(size, size, true);
+      await webcam.setup();
+      await webcam.play();
+      window.requestAnimationFrame(loop);
+
+      const canvas = document.getElementById("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      ctx = canvas.getContext("2d");
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = "";
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
+    }
+
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+
+      // snapshot 캡처
+      const snapCanvas = document.getElementById('snapshot');
+      const snapCtx = snapCanvas.getContext("2d");
+      snapCtx.drawImage(webcam.canvas, 0, 0, snapCanvas.width, snapCanvas.height);
+    }
+
+    var prev_action_time = new Date().getTime();
+
+    async function predict() {
+      const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+      const prediction = await model.predict(posenetOutput);
+
+      let action_index = -1;
+      let action_prop = -1;
+
+      for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        if (prediction[i].probability > action_prop) {
+          action_prop = prediction[i].probability;
+          action_index = i;
+        }
+        labelContainer.childNodes[i].innerHTML = classPrediction;
+      }
+
+      const cur_action_time = new Date().getTime();
+      const diff_time = cur_action_time - prev_action_time;
+
+      if (diff_time > 200) {
+        prev_action_time = cur_action_time;
+        sendAction(action_index);
+      }
+
+      drawPose(pose);
+    }
+
+    async function sendAction(action_index) {
+      await fetch('/action?index=' + action_index);
+    }
+
+    function drawPose(pose) {
+      if (webcam.canvas && pose) {
+        ctx.drawImage(webcam.canvas, 0, 0);
+        const minPartConfidence = 0.5;
+        tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
+        tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+      }
+    }
+
+    function submitReview(event) {
+      event.preventDefault();
+      const text = document.getElementById("reviewText").value;
+      if (!text) return alert("후기를 입력해주세요!");
+      const div = document.createElement("div");
+      div.textContent = `✅ ${text}`;
+      document.getElementById("review-list").appendChild(div);
+      document.getElementById("reviewText").value = "";
+    }
+  </script>
 </body>
 </html>
