@@ -6,7 +6,7 @@
   <title>Disaster Pose Trainer - 메인</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
-    /* 기본 박스 모델 및 body 스타일 */
+    /* 기본 박스 모델 및 전체 스타일 */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -14,13 +14,13 @@
     }
     html, body {
       width: 100%;
-      height: 100%;
-      overflow-x: hidden;
+      min-height: 100%;
       font-family: 'Inter', sans-serif;
       background-color: #f9fafb;
       scroll-behavior: smooth;
       line-height: 1.6;
     }
+
     /* 네비게이션 바 */
     nav {
       position: fixed;
@@ -41,18 +41,19 @@
       margin-left: 20px;
       font-weight: 600;
     }
-    /* 섹션: 중앙 정렬 */
+
+    /* 섹션 전체 중앙 배치 */
     section {
       width: 100%;
-      padding: 100px 20px 60px;
+      padding: 100px 20px 60px;  /* 네비게이션 고려 */
       display: flex;
       justify-content: center;
     }
-    /* 카드: 최대 너비 600px, 중앙 배치 */
+    /* 카드: 섹션 내부 카드형 UI, 최대 너비 600px */
     .card {
       background: white;
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       padding: 40px;
       margin: 60px 0;
       width: 100%;
@@ -60,39 +61,13 @@
       transition: all 0.6s ease-out;
       opacity: 0;
       transform: translateY(40px);
-      position: relative;
     }
     .section.visible, .card.visible {
       opacity: 1;
       transform: none;
     }
-    /* flex-row (예: why-needed 섹션) */
-    .flex-row {
-      display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-    }
-    .flex-row img {
-      max-width: 400px;
-      width: 100%;
-      border-radius: 12px;
-    }
-    /* 웹캠/캔버스 스타일 */
-    canvas {
-      border-radius: 10px;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 300px;
-      height: 300px;
-      display: block;
-    }
-    video {
-      display: none;
-    }
-    /* 영상과 경과 시간 표시 컨테이너 (가로 배치) */
+
+    /* 포즈 인식 관련 스타일 (2번 섹션) */
     #video-time-container {
       display: flex;
       flex-direction: row;
@@ -110,7 +85,18 @@
       min-width: 80px;
       text-align: center;
     }
-    /* 모델 입력창 */
+    canvas {
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      height: 300px;
+      display: block;
+    }
+    video {
+      display: none;
+    }
+    /* 모델 입력창 및 카메라 컨트롤 (이전 코드 유지) */
     .model-input {
       margin-top: 20px;
       text-align: center;
@@ -133,7 +119,6 @@
       cursor: pointer;
       font-weight: bold;
     }
-    /* 카메라 컨트롤 (모던하고 softr 스타일) */
     .camera-controls {
       margin-top: 20px;
       text-align: right;
@@ -151,6 +136,7 @@
     .camera-controls button:hover {
       background-color: #e0291f;
     }
+
     /* 예측 결과 UI */
     #label-container {
       width: 100%;
@@ -180,7 +166,54 @@
       padding-right: 5px;
       font-size: 0.9rem;
     }
-    /* 후기 폼 */
+
+    /* 3번 섹션: 사용 방법과 원리 소개 */
+    #how-it-works {
+      text-align: center;
+    }
+    #how-it-works p {
+      color: #4b5563;
+      margin-top: 10px;
+    }
+    .how-it-works-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      margin-top: 30px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .how-it-works-steps .step {
+      flex: 1 1 300px;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .how-it-works-steps .step:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+    .how-it-works-steps .step h3 {
+      margin-bottom: 12px;
+      color: #1f2937;
+    }
+    .how-it-works-steps .step p {
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    /* 5번 섹션: 사용 예시 및 사례 결과 – Softr 스타일 이미지 */
+    #examples img {
+      max-width: 600px;
+      display: block;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* 후기 폼 및 푸터 */
     .review-form textarea {
       width: 100%;
       padding: 12px;
@@ -199,7 +232,6 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    /* 푸터 */
     footer {
       background: #1f2937;
       color: white;
@@ -207,7 +239,8 @@
       padding: 30px 0;
       margin-top: 80px;
     }
-    /* 반응형 (768px 이하) */
+
+    /* 반응형 */
     @media (max-width: 768px) {
       nav {
         flex-direction: column;
@@ -235,15 +268,20 @@
       .camera-controls {
         text-align: center;
       }
+      .how-it-works-steps {
+        flex-direction: column;
+        gap: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- 고정 네비게이션 -->
+  <!-- 네비게이션 바 -->
   <nav>
     <div>👋 {{ username }}님 환영합니다</div>
     <div>
       <a href="#core-service">서비스</a>
+      <a href="#how-it-works">사용 방법</a>
       <a href="#why-needed">필요성</a>
       <a href="#examples">예시</a>
       <a href="#reviews">후기</a>
@@ -252,7 +290,7 @@
     </div>
   </nav>
 
-  <!-- 2번. 피난 훈련 프로그램 서비스 섹션 -->
+  <!-- 2번 섹션: 피난 훈련 프로그램 서비스 -->
   <section>
     <div class="card" id="core-service">
       <h2>2. 피난 훈련 프로그램</h2>
@@ -261,51 +299,82 @@
         <input type="text" id="modelKeyInput" placeholder="Teachable Machine 모델 키 입력" value="wef1yJup2" />
         <button onclick="loadModelKey()">모델 불러오기</button>
       </div>
-      <!-- 카메라 끄기 버튼은 별도 컨테이너에 모던하게 배치 -->
       <div class="camera-controls">
         <button onclick="stopCamera()">카메라 끄기</button>
       </div>
-      <!-- 영상과 경과 시간 표시 영역 -->
       <div id="video-time-container">
         <canvas id="canvas"></canvas>
         <div id="time-display">0.0 sec</div>
       </div>
-      <!-- 예측 결과 UI -->
       <div id="label-container"></div>
     </div>
   </section>
 
-  <!-- 4번. 왜 이 서비스가 필요한가요? 섹션 -->
+  <!-- 3번 섹션: 사용 방법과 원리 소개 -->
+  <section>
+    <div class="card" id="how-it-works">
+      <h2>3. 사용 방법과 원리 소개</h2>
+      <p>
+        아래 단계별 과정을 통해 본 서비스(Disaster Pose Trainer)가 어떻게 동작하며,<br>
+        어떤 방법으로 사용할 수 있는지 쉽게 파악할 수 있습니다.
+      </p>
+      <div class="how-it-works-steps">
+        <div class="step">
+          <h3>1. 연결 (Connect)</h3>
+          <p>
+            Teachable Machine 또는 사용자 맞춤 AI 모델을 연결해,<br>
+            포즈 데이터를 읽고 분석할 준비를 합니다.
+          </p>
+        </div>
+        <div class="step">
+          <h3>2. 커스터마이징 (Customize)</h3>
+          <p>
+            인식 결과 UI를 사용자 환경에 맞게 구성하고,<br>
+            훈련 시나리오를 설정합니다.
+          </p>
+        </div>
+        <div class="step">
+          <h3>3. 배포 및 실행 (Deploy & Execute)</h3>
+          <p>
+            설정이 완료되면 웹캠을 통해 훈련을 진행하며,<br>
+            실시간 인식으로 즉각적인 피드백을 제공합니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4번 섹션: 왜 이 서비스가 필요한가요? -->
   <section>
     <div class="card" id="why-needed">
       <div class="flex-row">
         <div>
           <h2>4. 왜 이 서비스가 필요한가요?</h2>
           <p>
-            실제 재난 상황은 예측할 수 없으며, 반복 훈련이 안전한 행동을 습관화하는 데 매우 중요합니다.<br><br>
-            기존 종이 기반 혹은 단순 영상 시청식 훈련은 실효성이 낮고,<br>
-            학생들이 직접 참여하고 즉각적인 피드백을 받을 수 있는<br>
-            실시간 포즈 인식 훈련은 학습 효과를 극대화합니다.
+            실제 재난 상황은 예측하기 어려워 반복 훈련이 필수적입니다.<br><br>
+            종이 기반 훈련 및 단순 영상 시청은 효과가 제한적이며,<br>
+            실시간 참여와 피드백이 가능한 포즈 인식 훈련은 학습 효과를 극대화합니다.
           </p>
         </div>
-        <img src="https://media.giphy.com/media/UqZqPBb9RRi7ErguUt/giphy.gif" alt="훈련 예시" />
+        <img src="https://via.placeholder.com/400x300?text=Training+Example" alt="훈련 예시" />
       </div>
     </div>
   </section>
 
-  <!-- 5번. 사용 예시 및 사례 결과 섹션 -->
+  <!-- 5번 섹션: 사용 예시 및 사례 결과 (Softr 스타일 이미지 적용) -->
   <section>
     <div class="card" id="examples">
       <h2>5. 사용 예시 및 사례 결과</h2>
       <p>
-        아래는 실제 사용자가 포즈를 취했을 때 실시간으로 인식되는 모습을 보여주는 예시입니다.
+        아래는 실제 사용 중 포즈 인식 결과가 반영되는 모습을 보여줍니다.
       </p>
       <canvas id="snapshot" width="300" height="300" style="margin: 20px auto; border-radius: 10px; border: 1px solid #ccc;"></canvas>
-      <img src="https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif" alt="사용 예시 이미지" style="max-width: 600px; display: block; margin: 20px auto; border-radius: 10px;" />
+      <!-- 새로운 softr 스타일 이미지: 플레이스홀더 이미지 사용 -->
+      <img src="https://via.placeholder.com/600x400?text=Softr+Style+Example" alt="Softr 스타일 예시 이미지" class="responsive" />
     </div>
   </section>
 
-  <!-- 6번. 사용자 후기 섹션 -->
+  <!-- 6번 섹션: 사용자 후기 -->
   <section>
     <div class="card" id="reviews">
       <h2>6. 사용자 후기</h2>
@@ -317,11 +386,14 @@
     </div>
   </section>
 
-  <!-- 7번. 문의처 섹션 -->
+  <!-- 7번 섹션: 문의처 -->
   <section>
     <div class="card" id="contact">
       <h2>7. 문의처</h2>
-      <p>개발자: 장덕진<br>이메일: jdj931013@ptsaebit.es.kr</p>
+      <p>
+        개발자: 장덕진<br>
+        이메일: jdj931013@ptsaebit.es.kr
+      </p>
     </div>
   </section>
 
@@ -330,17 +402,14 @@
     &copy; 2025 Disaster Pose Trainer. All rights reserved.
   </footer>
 
-  <!-- TensorFlow.js 및 Teachable Machine 스크립트 -->
+  <!-- 스크립트: TensorFlow.js, Teachable Machine, 및 사용자 정의 JS -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
   <script>
     let model, webcam, ctx, labelContainer, maxPredictions;
-    // 예측별 색상 배열 (필요시 색상 조정 가능)
     const colors = ["#2563eb", "#ef4444", "#10b981", "#f59e0b", "#6366f1", "#14b8a6", "#d97706", "#8b5cf6"];
-    // 카메라 시작 시각 및 활성 여부
     let cameraStartTime = null;
     let isCameraActive = true;
-    // 예측 중 여부 플래그
     let isPredicting = false;
 
     window.onload = () => {
@@ -364,7 +433,6 @@
         model = await tmPose.load(URL + "model.json", URL + "metadata.json");
         maxPredictions = model.getTotalClasses();
 
-        // 예측 결과 UI 동적 생성 (레이블마다 색상 적용)
         labelContainer = document.getElementById("label-container");
         labelContainer.innerHTML = "";
         for (let i = 0; i < maxPredictions; i++) {
@@ -390,7 +458,6 @@
         webcam = new tmPose.Webcam(300, 300, true, videoElement);
         await webcam.setup();
         await webcam.play();
-        // 카메라 켜진 시각 기록 및 활성화 플래그 true 설정
         cameraStartTime = Date.now();
         isCameraActive = true;
         window.requestAnimationFrame(loop);
@@ -405,7 +472,6 @@
       }
     }
 
-    // 카메라 끄기 함수
     function stopCamera() {
       if (webcam) {
         webcam.stop();
@@ -416,20 +482,16 @@
 
     function loop() {
       webcam.update();
-      
       if (!isPredicting && isCameraActive) {
         isPredicting = true;
         predict().then(() => { isPredicting = false; });
       }
-      
       window.requestAnimationFrame(loop);
-      // snapshot 캔버스 업데이트 (예시용)
       const snapCanvas = document.getElementById("snapshot");
       if (snapCanvas) {
         const snapCtx = snapCanvas.getContext("2d");
         snapCtx.drawImage(webcam.canvas, 0, 0, snapCanvas.width, snapCanvas.height);
       }
-      // 경과 시간 업데이트 (카메라 활성일 때만)
       if (cameraStartTime && isCameraActive) {
         const elapsed = ((Date.now() - cameraStartTime) / 1000).toFixed(1);
         document.getElementById("time-display").innerText = elapsed + " sec";
