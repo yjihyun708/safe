@@ -55,7 +55,6 @@ def action():
     index = request.args.get('index')
     print(f"동작 인식됨: {index}")
     # print(f"[INFO] Received index: {index}")
-
     # time.sleep(2)  # 포커스 전환 시간
 
     if index == '1':

@@ -52,7 +52,7 @@
     .card {
       background: white;
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       padding: 40px;
       margin: 60px 0;
       width: 100%;
@@ -60,6 +60,7 @@
       transition: all 0.6s ease-out;
       opacity: 0;
       transform: translateY(40px);
+      position: relative;
     }
     .section.visible, .card.visible {
       opacity: 1;
@@ -83,7 +84,7 @@
     canvas {
       border-radius: 10px;
       background: white;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       width: 300px;
       height: 300px;
       display: block;
@@ -108,6 +109,47 @@
       border-radius: 8px;
       min-width: 80px;
       text-align: center;
+    }
+    /* 모델 입력창 */
+    .model-input {
+      margin-top: 20px;
+      text-align: center;
+      width: 100%;
+    }
+    .model-input input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 280px;
+      max-width: 100%;
+    }
+    .model-input button {
+      padding: 10px 20px;
+      margin-left: 8px;
+      border-radius: 8px;
+      background: #1e40af;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    /* 카메라 컨트롤 (모던하고 softr 스타일) */
+    .camera-controls {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .camera-controls button {
+      background-color: #ff3b30;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    .camera-controls button:hover {
+      background-color: #e0291f;
     }
     /* 예측 결과 UI */
     #label-container {
@@ -137,28 +179,6 @@
       color: white;
       padding-right: 5px;
       font-size: 0.9rem;
-    }
-    /* 모델 입력창 */
-    .model-input {
-      margin-top: 20px;
-      text-align: center;
-      width: 100%;
-    }
-    .model-input input {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 280px;
-      max-width: 100%;
-    }
-    .model-input button {
-      padding: 10px 20px;
-      margin-left: 8px;
-      border-radius: 8px;
-      background: #1e40af;
-      color: white;
-      border: none;
-      cursor: pointer;
     }
     /* 후기 폼 */
     .review-form textarea {
@@ -212,6 +232,9 @@
       #time-display {
         margin-top: 10px;
       }
+      .camera-controls {
+        text-align: center;
+      }
     }
   </style>
 </head>
@@ -229,14 +252,18 @@
     </div>
   </nav>
 
-  <!-- 2번. 포즈 인식 서비스 섹션 -->
+  <!-- 2번. 피난 훈련 프로그램 서비스 섹션 -->
   <section>
     <div class="card" id="core-service">
-      <h2>2. 포즈 인식 서비스</h2>
+      <h2>2. 피난 훈련 프로그램</h2>
       <p>Teachable Machine 기반으로 훈련 자세를 실시간 인식합니다.</p>
       <div class="model-input">
         <input type="text" id="modelKeyInput" placeholder="Teachable Machine 모델 키 입력" value="wef1yJup2" />
         <button onclick="loadModelKey()">모델 불러오기</button>
+      </div>
+      <!-- 카메라 끄기 버튼은 별도 컨테이너에 모던하게 배치 -->
+      <div class="camera-controls">
+        <button onclick="stopCamera()">카메라 끄기</button>
       </div>
       <!-- 영상과 경과 시간 표시 영역 -->
       <div id="video-time-container">
@@ -308,10 +335,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
   <script>
     let model, webcam, ctx, labelContainer, maxPredictions;
-    // 예측별 색상 배열 (원하는 색상으로 조정 가능)
+    // 예측별 색상 배열 (필요시 색상 조정 가능)
     const colors = ["#2563eb", "#ef4444", "#10b981", "#f59e0b", "#6366f1", "#14b8a6", "#d97706", "#8b5cf6"];
-    // 카메라 시작 시각을 저장할 변수
+    // 카메라 시작 시각 및 활성 여부
     let cameraStartTime = null;
+    let isCameraActive = true;
     // 예측 중 여부 플래그
     let isPredicting = false;
 
@@ -342,20 +370,16 @@
         for (let i = 0; i < maxPredictions; i++) {
           const item = document.createElement("div");
           item.className = "prediction-item";
-
           const textDiv = document.createElement("div");
           textDiv.id = "class-name-" + i;
           textDiv.className = "prediction-text";
           textDiv.innerText = "";
-
           const progressDiv = document.createElement("div");
           progressDiv.className = "progress";
-
           const barDiv = document.createElement("div");
           barDiv.id = "bar-" + i;
           barDiv.className = "bar";
           barDiv.style.backgroundColor = colors[i % colors.length];
-
           progressDiv.appendChild(barDiv);
           item.appendChild(textDiv);
           item.appendChild(progressDiv);
@@ -366,51 +390,55 @@
         webcam = new tmPose.Webcam(300, 300, true, videoElement);
         await webcam.setup();
         await webcam.play();
-        // 카메라 켜진 시각 기록
+        // 카메라 켜진 시각 기록 및 활성화 플래그 true 설정
         cameraStartTime = Date.now();
+        isCameraActive = true;
         window.requestAnimationFrame(loop);
 
         const canvas = document.getElementById("canvas");
         canvas.width = 300;
         canvas.height = 300;
         ctx = canvas.getContext("2d");
-
       } catch (error) {
         alert("모델을 불러오는 데 실패했습니다. 모델 키를 확인해주세요.");
         console.error(error);
       }
     }
 
+    // 카메라 끄기 함수
+    function stopCamera() {
+      if (webcam) {
+        webcam.stop();
+        isCameraActive = false;
+        console.log("카메라가 꺼졌습니다.");
+      }
+    }
+
     function loop() {
       webcam.update();
       
-      // 예측이 진행 중이 아닐 때만 predict() 호출
-      if (!isPredicting) {
+      if (!isPredicting && isCameraActive) {
         isPredicting = true;
         predict().then(() => { isPredicting = false; });
       }
       
       window.requestAnimationFrame(loop);
-
       // snapshot 캔버스 업데이트 (예시용)
       const snapCanvas = document.getElementById("snapshot");
       if (snapCanvas) {
         const snapCtx = snapCanvas.getContext("2d");
         snapCtx.drawImage(webcam.canvas, 0, 0, snapCanvas.width, snapCanvas.height);
       }
-
-      // 경과 시간 업데이트 (카메라 켜진 후)
-      if (cameraStartTime) {
+      // 경과 시간 업데이트 (카메라 활성일 때만)
+      if (cameraStartTime && isCameraActive) {
         const elapsed = ((Date.now() - cameraStartTime) / 1000).toFixed(1);
         document.getElementById("time-display").innerText = elapsed + " sec";
       }
     }
 
     async function predict() {
-      // 모델 예측 진행 (비동기 처리)
       const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
       const prediction = await model.predict(posenetOutput);
-      
       let action_index = -1, action_prop = -1;
       for (let i = 0; i < maxPredictions; i++) {
         const prob = prediction[i].probability;
