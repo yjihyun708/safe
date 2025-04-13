@@ -1,0 +1,99 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teachable Machine Custom Control</title>
+</head>
+<body>
+    <div>Custom control based on Teachable Machine</div>
+    <input type="text" id="tm_model_key" value="wef1yJup2">
+    <button type="button" onclick="init()">Load Model</button>
+    <div>
+        <canvas id="canvas"></canvas>
+    </div>
+    <div id="label-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
+    <script type="text/javascript">
+        let model, webcam, ctx, labelContainer, maxPredictions;
+
+        async function init() {
+            const tm_model_key = document.getElementById("tm_model_key").value;
+            const URL = 'https://teachablemachine.withgoogle.com/models/' + tm_model_key + '/';
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            model = await tmPose.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            const size = 200;
+            const flip = true;
+            webcam = new tmPose.Webcam(size, size, flip);
+            await webcam.setup();
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            const canvas = document.getElementById("canvas");
+            canvas.width = size; canvas.height = size;
+            ctx = canvas.getContext("2d");
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) {
+                labelContainer.appendChild(document.createElement("div"));
+            }
+        }
+
+        async function loop(timestamp) {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        var prev_action_time = new Date().getTime();
+        var cur_action_time = new Date().getTime();
+
+        async function predict() {
+            const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+            const prediction = await model.predict(posenetOutput);
+
+            let action_index = -1;
+            let action_prop = -1;
+
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                if (prediction[i].probability > action_prop) {
+                    action_prop = prediction[i].probability;
+                    action_index = i;
+                }
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+            }
+
+            cur_action_time = new Date().getTime();
+            var diff_time = cur_action_time - prev_action_time;
+
+            if (diff_time > 200) {
+                prev_action_time = cur_action_time;
+                sendAction(action_index);
+            }
+            drawPose(pose);
+        }
+
+        async function sendAction(action_index) {
+            // 외부 접속 시 주의: 필요에 따라 Public URL 사용 고려
+            let response = await fetch('http://127.0.0.1:5001/action?index=' + action_index);
+            return null;
+        }
+
+        function drawPose(pose) {
+            if (webcam.canvas) {
+                ctx.drawImage(webcam.canvas, 0, 0);
+                if (pose) {
+                    const minPartConfidence = 0.5;
+                    tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
+                    tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+                }
+            }
+        }
+    </script>
+</body>
+</html> {% endcomment %}
