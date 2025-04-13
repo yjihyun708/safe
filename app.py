@@ -38,9 +38,9 @@ def action():
 #     os.system(f"start {public_url}")
 #     app.run(port=5000)
 
-# if __name__ == "__main__":
-#   app.run(port=5001)
-if __name__ == '__main__':
-    # 포트 8080으로 Flask 서버 실행
-    # (host='0.0.0.0' 설정하면 외부 접속 허용)
-    app.run(host='0.0.0.0', port=8080, debug=True)
+if __name__ == "__main__":
+  app.run(port=5001)
+# if __name__ == '__main__':
+#     # 포트 8080으로 Flask 서버 실행
+#     # (host='0.0.0.0' 설정하면 외부 접속 허용)
+#     app.run(host='0.0.0.0', port=8080, debug=True)

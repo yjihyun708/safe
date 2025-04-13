@@ -1,108 +1,110 @@
-<div>Custom control based on Teachable Machine</div>
-<input type="text" id="tm_model_key" value="wef1yJup2">
-<button type="button" onclick="init()">Load Model</button>
-<div><canvas id="canvas"></canvas></div>
-<div id="label-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
-<script type="text/javascript">
-    // More API functions here:
-    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/pose
-
-    let model, webcam, ctx, labelContainer, maxPredictions;
-
-    async function init() {
-
-        // the link to your model provided by Teachable Machine export panel
-        tm_model_key = document.getElementById("tm_model_key").value
-        URL = 'https://teachablemachine.withgoogle.com/models/' + tm_model_key + '/'
-        modelURL = URL + "model.json";
-        metadataURL = URL + "metadata.json";
-
-        // load the model and metadata
-        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
-        // Note: the pose library adds a tmPose object to your window (window.tmPose)
-        model = await tmPose.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
-
-        // Convenience function to setup a webcam
-        const size = 200;
-        const flip = true; // whether to flip the webcam
-        webcam = new tmPose.Webcam(size, size, flip); // width, height, flip
-        await webcam.setup(); // request access to the webcam
-        await webcam.play();
-        window.requestAnimationFrame(loop);
-
-        // append/get elements to the DOM
-        const canvas = document.getElementById("canvas");
-        canvas.width = size; canvas.height = size;
-        ctx = canvas.getContext("2d");
-        labelContainer = document.getElementById("label-container");
-        for (let i = 0; i < maxPredictions; i++) { // and class labels
-            labelContainer.appendChild(document.createElement("div"));
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재난 대비 포즈 훈련</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
-    }
-
-    async function loop(timestamp) {
-        webcam.update(); // update the webcam frame
-        await predict();
-        window.requestAnimationFrame(loop);
-    }
-
-    var prev_action_time = new Date().getTime();
-    var cur_action_time = new Date().getTime();
-
-    async function predict() {
-        // Prediction #1: run input through posenet
-        // estimatePose can take in an image, video or canvas html element
-        const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
-        // Prediction 2: run input through teachable machine classification model
-        const prediction = await model.predict(posenetOutput);
-
-        action_index = -1
-        action_prop = -1
-
-        for (let i = 0; i < maxPredictions; i++) {
-            const classPrediction =
-                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-
-            if (prediction[i].probability > action_prop)
-            {
-                action_prop = prediction[i].probability
-                action_index = i
+        header, section, footer {
+            padding: 5vw 8vw;
+            margin: auto;
+        }
+        header {
+            background: #003366;
+            color: white;
+            text-align: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        section {
+            background: white;
+            margin-top: 4vw;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #003366;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        footer {
+            background: #003366;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+        @media screen and (max-width: 768px) {
+            header, section {
+                padding: 6vw;
             }
-
-            labelContainer.childNodes[i].innerHTML = classPrediction;
-        }
-
-        cur_action_time = new Date().getTime();
-
-        var diff_time = cur_action_time - prev_action_time;
-
-        if (diff_time > 200)
-        {
-            prev_action_time = cur_action_time;
-            sendAction(action_index);
-        }
-
-        // finally draw the poses
-        drawPose(pose);
-    }
-
-    async function sendAction(action_index) {
-        let response = await fetch('http://127.0.0.1:5001/action?index=' + action_index);
-        return null
-    }
-
-    function drawPose(pose) {
-        if (webcam.canvas) {
-            ctx.drawImage(webcam.canvas, 0, 0);
-            // draw the keypoints and skeleton
-            if (pose) {
-                const minPartConfidence = 0.5;
-                tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
-                tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+            h1 {
+                font-size: 6vw;
+            }
+            h2 {
+                font-size: 5vw;
             }
         }
-    }
-</script>
+    </style>
+</head>
+<body>
+    <header>
+        <h1>재난 대비 포즈 인식 훈련</h1>
+        <p>Teachable Machine 기반 포즈 인식 웹 애플리케이션</p>
+    </header>
+
+    <section id="home">
+        <h2>1. 사용자 정보 입력</h2>
+        <img src="{{ url_for('static', filename='1_user_input.png') }}" alt="사용자 정보 입력">
+    </section>
+
+    <section id="service">
+        <h2>2. 핵심 서비스</h2>
+        <p>Teachable Machine의 포즈 인식 기술을 활용하여 재난 상황에서의 반응 훈련을 가능하게 합니다.</p>
+        <img src="{{ url_for('static', filename='2_core_service.png') }}" alt="핵심 서비스">
+    </section>
+
+    <section id="how-it-works">
+        <h2>3. 사용 방법과 원리</h2>
+        <p>1단계: 모델 키 입력 → 2단계: 웹캠 인식 시작 → 3단계: 인식 결과 확인 및 키 입력 전송</p>
+        <img src="{{ url_for('static', filename='3_how_it_works.png') }}" alt="사용 방법">
+    </section>
+
+    <section id="why-needed">
+        <h2>4. 왜 이 서비스가 필요한가요?</h2>
+        <p>반복적인 훈련을 위한 시뮬레이션 도구로 활용할 수 있으며, 실제 대피 훈련의 한계를 극복할 수 있습니다.</p>
+        <img src="{{ url_for('static', filename='4_why_needed.png') }}" alt="필요성 설명">
+    </section>
+
+    <section id="examples">
+        <h2>5. 사용 예시 및 사례</h2>
+        <p>포즈를 취하면 해당 동작이 인식되어 실시간으로 키보드 입력으로 전송됩니다.</p>
+        <img src="{{ url_for('static', filename='5_example.png') }}" alt="사용 예시">
+    </section>
+
+    <section id="reviews">
+        <h2>6. 사용 후기</h2>
+        <img src="{{ url_for('static', filename='6_reviews.png') }}" alt="사용 후기">
+    </section>
+
+    <section id="contact">
+        <h2>7. 문의처</h2>
+        <p><strong>개발자:</strong> 장덕진<br><strong>이메일:</strong> jdj931013@ptsaebit.es.kr</p>
+        <img src="{{ url_for('static', filename='7_contact.png') }}" alt="문의처">
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Disaster Pose Trainer. All rights reserved.</p>
+    </footer>
+</body>
+</html>
