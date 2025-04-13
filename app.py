@@ -2,13 +2,10 @@ import os
 import time
 
 import pydirectinput as pag  # pip install pydirectinput
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, session, url_for
 
 # from pyngrok import ngrok
 
-app = Flask(__name__)
-
-from flask import Flask, redirect, render_template, request, session, url_for
 
 app = Flask(__name__)
 app.secret_key = 'secure-key'
@@ -81,8 +78,16 @@ def action():
 #     os.system(f"start {public_url}")
 #     app.run(port=5000)
 
+# @app.before_first_request
+# def setup_ngrok():
+#     public_url = ngrok.connect(5001)
+#     print(f"🔗 ngrok 외부 주소: {public_url}")
+
 if __name__ == "__main__":
     app.run(port=5001)
+    
+    
+######### ngrok 테스트 ###########
 # if __name__ == '__main__':
 #     # 포트 8080으로 Flask 서버 실행
 #     # (host='0.0.0.0' 설정하면 외부 접속 허용)

@@ -1,17 +1,18 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Disaster Pose Trainer - 메인</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
-      margin: 0;
       background-color: #f9fafb;
       scroll-behavior: smooth;
+      line-height: 1.6;
     }
     nav {
       position: fixed;
@@ -20,48 +21,166 @@
       background-color: #2563eb;
       color: white;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 12px 24px;
+      align-items: center;
+      padding: 14px 24px;
       z-index: 1000;
+      flex-wrap: wrap;
     }
     nav a {
       color: white;
       text-decoration: none;
-      font-weight: bold;
       margin-left: 20px;
+      font-weight: 600;
     }
     section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 960px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
       max-width: 1000px;
       margin: 0 auto;
       padding: 100px 20px 60px;
     }
-    h2 {
-      color: #1f2937;
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      margin: 60px 0;
+    }
+    .section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 960px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.6s ease-out;
+    }
+    .section.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .flex-row {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .flex-row img {
+      max-width: 400px;
+      width: 100%;
+      border-radius: 12px;
     }
     canvas {
       border-radius: 10px;
       background: white;
       margin-top: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 100%;
     }
     #label-container div {
       font-size: 1rem;
       color: #374151;
     }
+    .model-input {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .model-input input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 280px;
+      max-width: 100%;
+    }
+    .model-input button {
+      padding: 10px 20px;
+      margin-left: 8px;
+      border-radius: 8px;
+      background: #1e40af;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
     .review-form textarea {
-      width: 100%; padding: 10px; margin-top: 10px;
-      border-radius: 8px; border: 1px solid #ccc;
-      resize: vertical; min-height: 80px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      min-height: 100px;
+      font-family: 'Inter', sans-serif;
     }
     .review-form button {
-      background-color: #2563eb; color: white;
-      padding: 10px 20px; margin-top: 10px;
-      border: none; border-radius: 8px; cursor: pointer;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
     footer {
-      background: #1f2937; color: white;
-      text-align: center; padding: 20px 0;
+      background: #1f2937;
+      color: white;
+      text-align: center;
+      padding: 30px 0;
+      margin-top: 80px;
+    }
+    @media (max-width: 768px) {
+      .flex-row {
+        flex-direction: column;
+        text-align: center;
+      }
+      nav {
+        flex-direction: column;
+        padding: 12px;
+      }
+      nav a {
+        margin: 8px 0;
+      }
+      section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 960px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+        padding: 80px 16px 40px;
+      }
+      h2 {
+        font-size: 1.4rem;
+      }
+      .model-input input,
+      .model-input button {
+        width: 100%;
+        margin: 8px 0;
+      }
     }
   </style>
 </head>
@@ -70,39 +189,60 @@
     <div>👋 {{ username }}님 환영합니다</div>
     <div>
       <a href="#core-service">서비스</a>
-      <a href="#how-it-works">방법</a>
+      <a href="#why-needed">필요성</a>
+      <a href="#examples">예시</a>
+      <a href="#reviews">후기</a>
       <a href="#contact">문의</a>
       <a href="/logout">로그아웃</a>
     </div>
   </nav>
 
-  <section id="core-service">
+  <section class="section card" id="core-service">
     <h2>2. 포즈 인식 서비스</h2>
     <p>Teachable Machine 기반으로 훈련 자세를 실시간 인식합니다.</p>
+    <div class="model-input">
+      <input type="text" id="modelKeyInput" placeholder="Teachable Machine 모델 키 입력" value="wef1yJup2" />
+      <button onclick="loadModelKey()">모델 불러오기</button>
+    </div>
+    <video id="webcam" autoplay playsinline muted style="display: none;"></video>
     <canvas id="canvas"></canvas>
     <div id="label-container"></div>
   </section>
 
-  <section id="how-it-works">
-    <h2>3. 사용 방법</h2>
-    <p>
-      1. 로그인 후 자동으로 사용자 모델 키가 불러와집니다.<br>
-      2. 웹캠을 통해 실시간 포즈 인식이 시작됩니다.<br>
-      3. 인식된 자세는 서버로 전송되어 동작 제어에 활용됩니다.
-    </p>
-    <canvas id="snapshot" width="300" height="300" style="border-radius: 10px; display:block; margin:auto; border:1px solid #ccc;"></canvas>
+  <section class="section card" id="why-needed">
+    <div class="flex-row">
+      <div>
+        <h2>4. 왜 이 서비스가 필요한가요?</h2>
+        <p>
+          실제 재난 상황은 예측할 수 없으며, 반복 훈련이 안전한 행동을 습관화하는 데 매우 중요합니다.<br><br>
+          기존 종이 기반 혹은 단순 영상 시청식 훈련은 실효성이 낮고,<br>
+          학생들이 직접 참여하고 즉각적인 피드백을 받을 수 있는<br>
+          실시간 포즈 인식 훈련은 학습 효과를 극대화합니다.
+        </p>
+      </div>
+      <img src="https://media.giphy.com/media/UqZqPBb9RRi7ErguUt/giphy.gif" alt="훈련 예시" />
+    </div>
   </section>
 
-  <section id="reviews">
-    <h2>6. 후기</h2>
+  <section class="section card" id="examples">
+    <h2>5. 사용 예시 및 사례 결과</h2>
+    <p>
+      아래는 실제 사용자가 포즈를 취했을 때 실시간으로 인식되는 모습을 보여주는 예시입니다.
+    </p>
+    <canvas id="snapshot" width="300" height="300" style="margin: 20px auto; display: block; border-radius: 10px; border: 1px solid #ccc;"></canvas>
+    <img src="https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif" alt="사용 예시 이미지" style="max-width: 600px; display: block; margin: 20px auto; border-radius: 10px;" />
+  </section>
+
+  <section class="section card" id="reviews">
+    <h2>6. 사용자 후기</h2>
     <form class="review-form" onsubmit="submitReview(event)">
       <textarea id="reviewText" placeholder="훈련을 해본 소감을 입력해주세요..."></textarea>
       <button type="submit">제출</button>
     </form>
-    <div id="review-list"></div>
+    <div id="review-list" style="margin-top: 20px;"></div>
   </section>
 
-  <section id="contact">
+  <section class="section card" id="contact">
     <h2>7. 문의처</h2>
     <p>개발자: 장덕진<br>이메일: jdj931013@ptsaebit.es.kr</p>
   </section>
@@ -114,35 +254,50 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
   <script>
-    const tm_model_key = "{{ model_key }}";
-    sessionStorage.setItem("modelKey", tm_model_key);
-
     let model, webcam, ctx, labelContainer, maxPredictions;
 
     window.onload = () => {
-      document.getElementById("core-service").scrollIntoView({ behavior: 'smooth' });
-      setTimeout(init, 800);
+      loadModelKey();
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      }, { threshold: 0.2 });
+
+      document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
     };
 
-    async function init() {
+    async function loadModelKey() {
+      const tm_model_key = document.getElementById("modelKeyInput").value.trim();
+      if (!tm_model_key) {
+        alert("모델 키를 입력해주세요.");
+        return;
+      }
+
       const URL = `https://teachablemachine.withgoogle.com/models/${tm_model_key}/`;
-      model = await tmPose.load(URL + "model.json", URL + "metadata.json");
-      maxPredictions = model.getTotalClasses();
+      try {
+        model = await tmPose.load(URL + "model.json", URL + "metadata.json");
+        maxPredictions = model.getTotalClasses();
 
-      webcam = new tmPose.Webcam(300, 300, true);
-      await webcam.setup();
-      await webcam.play();
-      window.requestAnimationFrame(loop);
+        const videoElement = document.getElementById("webcam");
+        webcam = new tmPose.Webcam(300, 300, true, videoElement);
+        await webcam.setup();
+        await webcam.play();
+        window.requestAnimationFrame(loop);
 
-      const canvas = document.getElementById("canvas");
-      canvas.width = 300;
-      canvas.height = 300;
-      ctx = canvas.getContext("2d");
+        const canvas = document.getElementById("canvas");
+        canvas.width = 300;
+        canvas.height = 300;
+        ctx = canvas.getContext("2d");
 
-      labelContainer = document.getElementById("label-container");
-      labelContainer.innerHTML = "";
-      for (let i = 0; i < maxPredictions; i++) {
-        labelContainer.appendChild(document.createElement("div"));
+        labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = "";
+        for (let i = 0; i < maxPredictions; i++) {
+          labelContainer.appendChild(document.createElement("div"));
+        }
+      } catch (error) {
+        alert("모델을 불러오는 데 실패했습니다. 모델 키를 확인해주세요.");
+        console.error(error);
       }
     }
 
@@ -151,8 +306,7 @@
       await predict();
       window.requestAnimationFrame(loop);
 
-      // snapshot 캡처
-      const snapCanvas = document.getElementById('snapshot');
+      const snapCanvas = document.getElementById("snapshot");
       const snapCtx = snapCanvas.getContext("2d");
       snapCtx.drawImage(webcam.canvas, 0, 0, snapCanvas.width, snapCanvas.height);
     }
@@ -194,5 +348,21 @@
       document.getElementById("reviewText").value = "";
     }
   </script>
+
+
+<script>
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      } else {
+        entry.target.classList.remove('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+</script>
+
 </body>
 </html>

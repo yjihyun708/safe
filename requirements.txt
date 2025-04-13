@@ -1,3 +1,7 @@
+flask==3.1.0
+pydirectinput
+tensorflow
+pyngrok
 streamlit
 numpy
 pandas
