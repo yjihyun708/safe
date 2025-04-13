@@ -2,11 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Disaster Pose Trainer - 메인</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
   <style>
-    /* 기본 박스 모델 및 전체 스타일 */
+    /* 기본 초기화 및 전체 스타일 */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -17,10 +17,9 @@
       min-height: 100%;
       font-family: 'Inter', sans-serif;
       background-color: #f9fafb;
-      scroll-behavior: smooth;
       line-height: 1.6;
+      scroll-behavior: smooth;
     }
-
     /* 네비게이션 바 */
     nav {
       position: fixed;
@@ -41,15 +40,13 @@
       margin-left: 20px;
       font-weight: 600;
     }
-
     /* 섹션 전체 중앙 배치 */
     section {
       width: 100%;
-      padding: 100px 20px 60px;  /* 네비게이션 고려 */
+      padding: 100px 20px 60px; /* 네비게이션 고려 */
       display: flex;
       justify-content: center;
     }
-    /* 카드: 섹션 내부 카드형 UI, 최대 너비 600px */
     .card {
       background: white;
       border-radius: 16px;
@@ -61,13 +58,13 @@
       transition: all 0.6s ease-out;
       opacity: 0;
       transform: translateY(40px);
+      position: relative;
     }
-    .section.visible, .card.visible {
+    .card.visible {
       opacity: 1;
       transform: none;
     }
-
-    /* 포즈 인식 관련 스타일 (2번 섹션) */
+    /* 2번 섹션: 피난 훈련 프로그램 */
     #video-time-container {
       display: flex;
       flex-direction: row;
@@ -91,12 +88,10 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       width: 300px;
       height: 300px;
-      display: block;
     }
     video {
       display: none;
     }
-    /* 모델 입력창 및 카메라 컨트롤 (이전 코드 유지) */
     .model-input {
       margin-top: 20px;
       text-align: center;
@@ -136,7 +131,6 @@
     .camera-controls button:hover {
       background-color: #e0291f;
     }
-
     /* 예측 결과 UI */
     #label-container {
       width: 100%;
@@ -166,7 +160,6 @@
       padding-right: 5px;
       font-size: 0.9rem;
     }
-
     /* 3번 섹션: 사용 방법과 원리 소개 */
     #how-it-works {
       text-align: center;
@@ -203,8 +196,13 @@
       color: #4b5563;
       line-height: 1.5;
     }
-
-    /* 5번 섹션: 사용 예시 및 사례 결과 – Softr 스타일 이미지 */
+    /* 4번 섹션: 왜 이 서비스가 필요한가요? (이미지 직접 생성) */
+    #why-needed img {
+      max-width: 400px;
+      width: 100%;
+      border-radius: 12px;
+    }
+    /* 5번 섹션: 사용 예시 및 사례 결과 (Softr 스타일, 직접 생성 이미지) */
     #examples img {
       max-width: 600px;
       display: block;
@@ -212,26 +210,60 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
-    /* 후기 폼 및 푸터 */
-    .review-form textarea {
+    /* 6번 섹션: 사용자 후기 - 슬라이드 애니메이션 */
+    #reviews {
+      position: relative;
+      min-height: 220px;
+      overflow: hidden;
+    }
+    .testimonial-slide {
+      position: absolute;
       width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      resize: vertical;
-      min-height: 100px;
-      font-family: 'Inter', sans-serif;
+      top: 0;
+      left: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      justify-content: center;
+      align-items: center;
     }
-    .review-form button {
-      background-color: #2563eb;
-      color: white;
-      padding: 10px 20px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+    .testimonial-slide.visible {
+      opacity: 1;
     }
+    .testimonial-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      width: 90%;
+      max-width: 500px;
+      padding: 20px;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .testimonial-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .testimonial-content {
+      flex: 1;
+    }
+    .testimonial-content h4 {
+      margin-bottom: 6px;
+      color: #1f2937;
+    }
+    .testimonial-content p {
+      color: #4b5563;
+      line-height: 1.4;
+    }
+    /* 푸터 */
     footer {
       background: #1f2937;
       color: white;
@@ -239,7 +271,6 @@
       padding: 30px 0;
       margin-top: 80px;
     }
-
     /* 반응형 */
     @media (max-width: 768px) {
       nav {
@@ -249,14 +280,17 @@
       nav a {
         margin: 8px 0;
       }
-      .flex-row {
+      .how-it-works-steps {
         flex-direction: column;
-        text-align: center;
+        gap: 20px;
       }
       .model-input input,
       .model-input button {
         width: 100%;
         margin: 8px 0;
+      }
+      .camera-controls {
+        text-align: center;
       }
       #video-time-container {
         flex-direction: column;
@@ -265,18 +299,14 @@
       #time-display {
         margin-top: 10px;
       }
-      .camera-controls {
-        text-align: center;
-      }
-      .how-it-works-steps {
-        flex-direction: column;
-        gap: 20px;
+      .testimonial-card {
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <!-- 네비게이션 바 -->
+  <!-- 네비게이션 -->
   <nav>
     <div>👋 {{ username }}님 환영합니다</div>
     <div>
@@ -290,13 +320,13 @@
     </div>
   </nav>
 
-  <!-- 2번 섹션: 피난 훈련 프로그램 서비스 -->
+  <!-- 2번 섹션: 피난 훈련 프로그램 -->
   <section>
     <div class="card" id="core-service">
       <h2>2. 피난 훈련 프로그램</h2>
-      <p>Teachable Machine 기반으로 훈련 자세를 실시간 인식합니다.</p>
+      <p>Teachable Machine 기반으로 재난 상황에서의 훈련 자세를 실시간 인식합니다.</p>
       <div class="model-input">
-        <input type="text" id="modelKeyInput" placeholder="Teachable Machine 모델 키 입력" value="wef1yJup2" />
+        <input type="text" id="modelKeyInput" placeholder="Teachable Machine 모델 키 입력" value="wef1yJup2"/>
         <button onclick="loadModelKey()">모델 불러오기</button>
       </div>
       <div class="camera-controls">
@@ -315,28 +345,28 @@
     <div class="card" id="how-it-works">
       <h2>3. 사용 방법과 원리 소개</h2>
       <p>
-        아래 단계별 과정을 통해 본 서비스(Disaster Pose Trainer)가 어떻게 동작하며,<br>
-        어떤 방법으로 사용할 수 있는지 쉽게 파악할 수 있습니다.
+        아래 단계별 과정을 통해 본 서비스가<br>
+        어떻게 동작하며, 어떤 방법으로 사용할 수 있는지 살펴봅니다.
       </p>
       <div class="how-it-works-steps">
         <div class="step">
           <h3>1. 연결 (Connect)</h3>
           <p>
-            Teachable Machine 또는 사용자 맞춤 AI 모델을 연결해,<br>
+            Teachable Machine 또는 사용자 맞춤 AI 모델을 연결해<br>
             포즈 데이터를 읽고 분석할 준비를 합니다.
           </p>
         </div>
         <div class="step">
           <h3>2. 커스터마이징 (Customize)</h3>
           <p>
-            인식 결과 UI를 사용자 환경에 맞게 구성하고,<br>
+            인식 결과 UI를 사용자 환경에 맞게 구성하고<br>
             훈련 시나리오를 설정합니다.
           </p>
         </div>
         <div class="step">
           <h3>3. 배포 및 실행 (Deploy & Execute)</h3>
           <p>
-            설정이 완료되면 웹캠을 통해 훈련을 진행하며,<br>
+            설정 완료 후 웹캠을 통해 훈련을 진행하며<br>
             실시간 인식으로 즉각적인 피드백을 제공합니다.
           </p>
         </div>
@@ -344,45 +374,91 @@
     </div>
   </section>
 
-  <!-- 4번 섹션: 왜 이 서비스가 필요한가요? -->
+  <!-- 4번 섹션: 왜 이 서비스가 필요한가요? (생성한 이미지 사용) -->
   <section>
     <div class="card" id="why-needed">
-      <div class="flex-row">
-        <div>
+      <div style="display: flex; flex-wrap: wrap; gap: 30px; align-items: center; justify-content: space-between;">
+        <div style="flex: 1;">
           <h2>4. 왜 이 서비스가 필요한가요?</h2>
           <p>
-            실제 재난 상황은 예측하기 어려워 반복 훈련이 필수적입니다.<br><br>
+            실제 재난 상황은 예측하기 어렵고<br>
+            반복 훈련이 안전한 행동을 습관화하는 데 꼭 필요합니다.<br><br>
             종이 기반 훈련 및 단순 영상 시청은 효과가 제한적이며,<br>
             실시간 참여와 피드백이 가능한 포즈 인식 훈련은 학습 효과를 극대화합니다.
           </p>
         </div>
-        <img src="https://via.placeholder.com/400x300?text=Training+Example" alt="훈련 예시" />
+        <!-- 직접 생성한 SVG 이미지 (400x300) -->
+        <!-- 4번 섹션: 왜 이 서비스가 필요한가요? -->
+        <img 
+        src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNGOUZBRkIiLz48cGF0aCBkPSJNMCAxODAgUSAyMDAgNzAsIDQwMCAxODAgTCA0MDAgMzAwIEwgMCAzMDAgWiIgZmlsbD0iI0RCRUFGRSIvPjxyZWN0IHg9IjcwIiB5PSIxMDAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgcng9IjgiIGZpbGw9IiM2MzY2RjEiLz48cmVjdCB4PSIxNDUiIHk9IjEyMCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iIzRGNDZFNSIvPjxyZWN0IHg9IjIyMCIgeT0iOTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI5MCIgcng9IjgiIGZpbGw9IiM0MzM4Q0EiLz48dGV4dCB4PSIyMDAiIHk9IjYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMUYyOTM3IiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkV2YWN1YXRpb24gVHJhaW5pbmc8L3RleHQ+PC9zdmc+" 
+        alt="Evacuation Training" 
+        style="max-width:400px; width:100%; border-radius:12px;"
+        />
+
       </div>
     </div>
   </section>
 
-  <!-- 5번 섹션: 사용 예시 및 사례 결과 (Softr 스타일 이미지 적용) -->
+  <!-- 5번 섹션: 사용 예시 및 사례 결과 (생성한 이미지 사용) -->
   <section>
     <div class="card" id="examples">
       <h2>5. 사용 예시 및 사례 결과</h2>
-      <p>
-        아래는 실제 사용 중 포즈 인식 결과가 반영되는 모습을 보여줍니다.
-      </p>
+      <p>아래는 실제 피난 훈련 프로그램을 적용한 예시입니다.</p>
       <canvas id="snapshot" width="300" height="300" style="margin: 20px auto; border-radius: 10px; border: 1px solid #ccc;"></canvas>
-      <!-- 새로운 softr 스타일 이미지: 플레이스홀더 이미지 사용 -->
-      <img src="https://via.placeholder.com/600x400?text=Softr+Style+Example" alt="Softr 스타일 예시 이미지" class="responsive" />
+      <img
+        src="/static/images/real-training-result.png"
+        alt="훈련 프로그램 실제 적용 결과 이미지"
+        style="max-width:600px; display:block; margin:20px auto; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);"
+      />
     </div>
   </section>
+  
 
-  <!-- 6번 섹션: 사용자 후기 -->
+  <!-- 6번 섹션: 사용자 후기 (가상 후기 슬라이드) -->
   <section>
     <div class="card" id="reviews">
       <h2>6. 사용자 후기</h2>
-      <form class="review-form" onsubmit="submitReview(event)">
-        <textarea id="reviewText" placeholder="훈련을 해본 소감을 입력해주세요..."></textarea>
-        <button type="submit">제출</button>
-      </form>
-      <div id="review-list" style="margin-top: 20px;"></div>
+      <div id="testimonial-container" style="position: relative; width: 100%; height: 300px;">
+        <!-- 슬라이드 1 -->
+        <div class="testimonial-slide" id="slide1">
+          <div class="testimonial-card">
+            <img class="testimonial-avatar" src="https://via.placeholder.com/50?text=A" alt="Avatar1">
+            <div class="testimonial-content">
+              <h4>홍길동 (학부모)</h4>
+              <p>
+                “아이들이 집에서도 재난 훈련을 할 수 있어 마음이 놓입니다.
+                실제 상황에서도 침착하게 대처할 수 있을 것 같아요.”
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- 슬라이드 2 -->
+        <div class="testimonial-slide" id="slide2">
+          <div class="testimonial-card">
+            <img class="testimonial-avatar" src="https://via.placeholder.com/50?text=B" alt="Avatar2">
+            <div class="testimonial-content">
+              <h4>김하나 (초등 교사)</h4>
+              <p>
+                “수업 시간에 간단히 태블릿으로 훈련을 진행했는데,
+                학생들이 즐겁게 참여했습니다. 실시간 피드백이 정말 좋아요!”
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- 슬라이드 3 -->
+        <div class="testimonial-slide" id="slide3">
+          <div class="testimonial-card">
+            <img class="testimonial-avatar" src="https://via.placeholder.com/50?text=C" alt="Avatar3">
+            <div class="testimonial-content">
+              <h4>이준영 (대학생)</h4>
+              <p>
+                “캠퍼스 내 안전 교육에 활용했는데, 기존 강의보다 훨씬 이해하기 쉬웠습니다.
+                언제 어디서나 접속 가능한 점이 가장 편리해요.”
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -402,7 +478,7 @@
     &copy; 2025 Disaster Pose Trainer. All rights reserved.
   </footer>
 
-  <!-- 스크립트: TensorFlow.js, Teachable Machine, 및 사용자 정의 JS -->
+  <!-- TensorFlow.js 및 Teachable Machine 스크립트 -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
   <script>
@@ -414,12 +490,15 @@
 
     window.onload = () => {
       loadModelKey();
+      // Intersection Observer: 카드 등장 애니메이션
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) entry.target.classList.add('visible');
         });
       }, { threshold: 0.2 });
       document.querySelectorAll('.card').forEach(card => observer.observe(card));
+      // 사용자 후기 슬라이드 시작
+      startTestimonialSlideshow();
     };
 
     async function loadModelKey() {
@@ -523,6 +602,18 @@
         tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
         tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
       }
+    }
+
+    function startTestimonialSlideshow() {
+      const slides = document.querySelectorAll(".testimonial-slide");
+      if (!slides.length) return;
+      slides[0].classList.add("visible");
+      let currentSlide = 0;
+      setInterval(() => {
+        slides.forEach(s => s.classList.remove("visible"));
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add("visible");
+      }, 4000);
     }
 
     function submitReview(event) {
