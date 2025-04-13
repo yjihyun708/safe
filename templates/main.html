@@ -9,12 +9,10 @@
     /* 기본 초기화 및 전체 스타일 */
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
     }
     html, body {
-      width: 100%;
-      min-height: 100%;
+      width: 100%; min-height: 100%;
       font-family: 'Inter', sans-serif;
       background-color: #f9fafb;
       line-height: 1.6;
@@ -22,23 +20,13 @@
     }
     /* 네비게이션 바 */
     nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background-color: #2563eb;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 24px;
-      z-index: 1000;
-      flex-wrap: wrap;
+      position: fixed; top: 0; width: 100%;
+      background-color: #2563eb; color: white;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 24px; z-index: 1000; flex-wrap: wrap;
     }
     nav a {
-      color: white;
-      text-decoration: none;
-      margin-left: 20px;
-      font-weight: 600;
+      color: white; text-decoration: none; margin-left: 20px; font-weight: 600;
     }
     /* 섹션 전체 중앙 배치 */
     section {
@@ -47,14 +35,15 @@
       display: flex;
       justify-content: center;
     }
+    /* 카드 영역 확장 (최대 1200px) */
     .card {
       background: white;
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       padding: 40px;
       margin: 60px 0;
       width: 100%;
-      max-width: 600px;
+      max-width: 1200px;
       transition: all 0.6s ease-out;
       opacity: 0;
       transform: translateY(40px);
@@ -64,74 +53,120 @@
       opacity: 1;
       transform: none;
     }
-    /* 2번 섹션: 피난 훈련 프로그램 */
-    #video-time-container {
+    /* 2번 섹션: 2열 레이아웃 (좌측: 티처블머신, 우측: 게더타운) */
+    .core-service-container {
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
       gap: 20px;
-      margin-top: 20px;
+      align-items: flex-start;
+      flex-wrap: nowrap; /* 강제 좌우배치 */
     }
-    #time-display {
-      font-size: 1.5rem;
-      color: #333;
-      background: #f1f1f1;
-      padding: 10px;
-      border-radius: 8px;
-      min-width: 80px;
-      text-align: center;
+    .left-content, .right-content {
+      width: 50%;
+      min-width: 280px;
     }
-    canvas {
-      border-radius: 10px;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      width: 300px;
-      height: 300px;
+    .vertical-divider {
+      width: 1px;
+      background-color: #ccc;
+      opacity: 0.5;
     }
-    video {
-      display: none;
-    }
+    /* 좌측 영역 - 티처블머신 프로그램 */
     .model-input {
-      margin-top: 20px;
-      text-align: center;
-      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
     }
     .model-input input {
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      width: 280px;
-      max-width: 100%;
+      flex: 1;
     }
     .model-input button {
       padding: 10px 20px;
-      margin-left: 8px;
       border-radius: 8px;
       background: #1e40af;
       color: white;
       border: none;
       cursor: pointer;
       font-weight: bold;
+      transition: background-color 0.3s ease;
     }
+    .model-input button:hover {
+      background: #162f73;
+    }
+    /* 영상 및 대피 타이머 영역 재구성: flex 2열 - 왼쪽: 영상, 오른쪽: 타이머 + 카메라 끄기 */
+    #video-timer-wrapper {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .video-container {
+      /* 영상 영역 */
+    }
+    canvas {
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 400px;
+      height: 400px;
+    }
+    .timer-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    /* 대피 시간 타이머: 원형 모던 디자인 (150×150) */
+    #time-container {
+      width: 150px;
+      height: 150px;
+      border: 4px solid #1e40af;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #time-container .time-title {
+      font-size: 1rem;
+      margin-bottom: 5px;
+      color: #1e40af;
+    }
+    #time-display {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #1e40af;
+      display: inline-block;
+    }
+    .time-unit {
+      font-size: 1rem;
+      color: #1e40af;
+      margin-left: 5px;
+    }
+    /* 카메라 끄기 버튼: 타이머 밑에 위치 (타이머컬럼 내) */
     .camera-controls {
-      margin-top: 20px;
-      text-align: right;
+      text-align: center;
     }
     .camera-controls button {
-      background-color: #ff3b30;
-      color: white;
       padding: 10px 20px;
+      border-radius: 8px;
+      background: #ff3b30;
+      color: white;
       border: none;
-      border-radius: 30px;
       cursor: pointer;
       font-weight: bold;
       transition: background-color 0.3s ease;
     }
     .camera-controls button:hover {
-      background-color: #e0291f;
+      background: #e0291f;
     }
-    /* 예측 결과 UI */
+    /* 예측 결과 레이블 영역 */
     #label-container {
       width: 100%;
       margin-top: 20px;
@@ -160,14 +195,54 @@
       padding-right: 5px;
       font-size: 0.9rem;
     }
+    /* 우측 영역: 게더타운 URL 입력 및 입장하기(새탭)와 홈페이지 이미지 */
+    .gathertown-section {
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .gathertown-section h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #1f2937;
+    }
+    .gathertown-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .gathertown-input input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .gathertown-input button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      background-color: #2563eb;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .gathertown-input button:hover {
+      background-color: #1e40af;
+      transform: translateY(-2px);
+    }
+    /* 게더타운 홈페이지 이미지 (우측 하단) */
+    #gathertown-thumbnail img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
     /* 3번 섹션: 사용 방법과 원리 소개 */
-    #how-it-works {
-      text-align: center;
-    }
-    #how-it-works p {
-      color: #4b5563;
-      margin-top: 10px;
-    }
+    #how-it-works { text-align: center; }
+    #how-it-works p { color: #4b5563; margin-top: 10px; }
     .how-it-works-steps {
       display: flex;
       flex-wrap: wrap;
@@ -181,12 +256,12 @@
       background: #f8fafc;
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .how-it-works-steps .step:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
     .how-it-works-steps .step h3 {
       margin-bottom: 12px;
@@ -196,13 +271,13 @@
       color: #4b5563;
       line-height: 1.5;
     }
-    /* 4번 섹션: 왜 이 서비스가 필요한가요? (이미지 직접 생성) */
+    /* 4번 섹션: 왜 이 서비스가 필요한가요? */
     #why-needed img {
       max-width: 400px;
       width: 100%;
       border-radius: 12px;
     }
-    /* 5번 섹션: 사용 예시 및 사례 결과 (Softr 스타일, 직접 생성 이미지) */
+    /* 5번 섹션: 사용 예시 및 사례 결과 */
     #examples img {
       max-width: 600px;
       display: block;
@@ -231,13 +306,11 @@
       justify-content: center;
       align-items: center;
     }
-    .testimonial-slide.visible {
-      opacity: 1;
-    }
+    .testimonial-slide.visible { opacity: 1; }
     .testimonial-card {
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
       width: 90%;
       max-width: 500px;
       padding: 20px;
@@ -252,17 +325,9 @@
       border-radius: 50%;
       object-fit: cover;
     }
-    .testimonial-content {
-      flex: 1;
-    }
-    .testimonial-content h4 {
-      margin-bottom: 6px;
-      color: #1f2937;
-    }
-    .testimonial-content p {
-      color: #4b5563;
-      line-height: 1.4;
-    }
+    .testimonial-content { flex: 1; }
+    .testimonial-content h4 { margin-bottom: 6px; color: #1f2937; }
+    .testimonial-content p { color: #4b5563; line-height: 1.4; }
     /* 푸터 */
     footer {
       background: #1f2937;
@@ -273,35 +338,15 @@
     }
     /* 반응형 */
     @media (max-width: 768px) {
-      nav {
-        flex-direction: column;
-        padding: 12px;
-      }
-      nav a {
-        margin: 8px 0;
-      }
-      .how-it-works-steps {
-        flex-direction: column;
-        gap: 20px;
-      }
-      .model-input input,
-      .model-input button {
-        width: 100%;
-        margin: 8px 0;
-      }
-      .camera-controls {
-        text-align: center;
-      }
-      #video-time-container {
-        flex-direction: column;
-        align-items: center;
-      }
-      #time-display {
-        margin-top: 10px;
-      }
-      .testimonial-card {
-        width: 100%;
-      }
+      nav { flex-direction: column; padding: 12px; }
+      nav a { margin: 8px 0; }
+      .core-service-container { flex-direction: column; }
+      .left-content, .right-content { width: 100%; }
+      .vertical-divider { display: none; }
+      .model-input input, .model-input button { width: 100%; margin: 8px 0; }
+      #video-timer-wrapper { flex-direction: column; align-items: center; }
+      .timer-column { margin-top: 10px; }
+      .camera-controls { text-align: center; }
     }
   </style>
 </head>
@@ -325,18 +370,53 @@
     <div class="card" id="core-service">
       <h2>2. 피난 훈련 프로그램</h2>
       <p>Teachable Machine 기반으로 재난 상황에서의 훈련 자세를 실시간 인식합니다.</p>
-      <div class="model-input">
-        <input type="text" id="modelKeyInput" placeholder="Teachable Machine 모델 키 입력" value="wef1yJup2"/>
-        <button onclick="loadModelKey()">모델 불러오기</button>
+      <div class="core-service-container">
+        <!-- 좌측 영역: 티처블머신 프로그램 -->
+        <div class="left-content">
+          <!-- 모델 입력 및 불러오기 -->
+          <div class="model-input">
+            <input type="text" id="modelKeyInput" placeholder="Teachable Machine 모델 키 입력" value="wef1yJup2" />
+            <button onclick="loadModelKey()">모델 불러오기</button>
+          </div>
+          <!-- 영상 및 타이머 영역: 좌측에는 캔버스, 우측에는 타이머 + 카메라 끄기 -->
+          <div id="video-timer-wrapper">
+            <div class="video-container">
+              <canvas id="canvas"></canvas>
+            </div>
+            <div class="timer-column">
+              <div id="time-container">
+                <div class="time-title">대피 시간</div>
+                <div>
+                  <span id="time-display">0.0</span>
+                  <span class="time-unit">초</span>
+                </div>
+              </div>
+              <!-- 카메라 끄기 버튼은 타이머 바로 아래 -->
+              <div class="camera-controls">
+                <button onclick="stopCamera()">카메라 끄기</button>
+              </div>
+            </div>
+          </div>
+          <!-- 예측 결과 레이블 영역 -->
+          <div id="label-container"></div>
+        </div>
+        <!-- 좌측과 우측 사이 희미한 구분선 -->
+        <div class="vertical-divider"></div>
+        <!-- 우측 영역: 게더타운 URL 입력 및 입장하기(새탭)와 게더타운 홈페이지 이미지 -->
+        <div class="right-content">
+          <div class="gathertown-section">
+            <h3>게더타운 URL 입력 및 입장하기(새탭)</h3>
+            <div class="gathertown-input">
+              <input type="url" id="gathertownURL" placeholder="게더타운 URL을 입력해주세요." value="https://gather.town/app/4BDf97jEEOpc6l8c/christmas%20maze" />
+              <button onclick="openGatherTown()">입장하기</button>
+            </div>
+            <!-- 게더타운 홈페이지 이미지 (썸네일 대신) -->
+            <div id="gathertown-thumbnail">
+              <img src="https://via.placeholder.com/500x300?text=Gather+Town+Homepage" alt="Gather Town Homepage" />
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="camera-controls">
-        <button onclick="stopCamera()">카메라 끄기</button>
-      </div>
-      <div id="video-time-container">
-        <canvas id="canvas"></canvas>
-        <div id="time-display">0.0 sec</div>
-      </div>
-      <div id="label-container"></div>
     </div>
   </section>
 
@@ -374,7 +454,7 @@
     </div>
   </section>
 
-  <!-- 4번 섹션: 왜 이 서비스가 필요한가요? (생성한 이미지 사용) -->
+  <!-- 4번 섹션: 왜 이 서비스가 필요한가요? (이미지 사용) -->
   <section>
     <div class="card" id="why-needed">
       <div style="display: flex; flex-wrap: wrap; gap: 30px; align-items: center; justify-content: space-between;">
@@ -387,34 +467,22 @@
             실시간 참여와 피드백이 가능한 포즈 인식 훈련은 학습 효과를 극대화합니다.
           </p>
         </div>
-        <!-- 직접 생성한 SVG 이미지 (400x300) -->
-        <!-- 4번 섹션: 왜 이 서비스가 필요한가요? -->
-        <img 
-        src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNGOUZBRkIiLz48cGF0aCBkPSJNMCAxODAgUSAyMDAgNzAsIDQwMCAxODAgTCA0MDAgMzAwIEwgMCAzMDAgWiIgZmlsbD0iI0RCRUFGRSIvPjxyZWN0IHg9IjcwIiB5PSIxMDAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgcng9IjgiIGZpbGw9IiM2MzY2RjEiLz48cmVjdCB4PSIxNDUiIHk9IjEyMCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iIzRGNDZFNSIvPjxyZWN0IHg9IjIyMCIgeT0iOTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI5MCIgcng9IjgiIGZpbGw9IiM0MzM4Q0EiLz48dGV4dCB4PSIyMDAiIHk9IjYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMUYyOTM3IiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkV2YWN1YXRpb24gVHJhaW5pbmc8L3RleHQ+PC9zdmc+" 
-        alt="Evacuation Training" 
-        style="max-width:400px; width:100%; border-radius:12px;"
-        />
-
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNGOUZBRkIiLz48cGF0aCBkPSJNMCAxODAgUSAyMDAgNzAsIDQwMCAxODAgTCA0MDAgMzAwIEwgMCAzMDAgWiIgZmlsbD0iI0RCRUFGRSIvPjxyZWN0IHg9IjcwIiB5PSIxMDAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI4MCIgcng9IjgiIGZpbGw9IiM2MzY2RjEiLz48cmVjdCB4PSIxNDUiIHk9IjEyMCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iIzRGNDZFNSIvPjxyZWN0IHg9IjIyMCIgeT0iOTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI5MCIgcng9IjgiIGZpbGw9IiM0MzM4Q0EiLz48dGV4dCB4PSIyMDAiIHk9IjYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMUYyOTM3IiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iYm9sZCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkV2YWN1YXRpb24gVHJhaW5pbmc8L3RleHQ+PC9zdmc+" alt="Evacuation Training" style="max-width:400px; width:100%; border-radius:12px;">
       </div>
     </div>
   </section>
 
-  <!-- 5번 섹션: 사용 예시 및 사례 결과 (생성한 이미지 사용) -->
+  <!-- 5번 섹션: 사용 예시 및 사례 결과 -->
   <section>
     <div class="card" id="examples">
       <h2>5. 사용 예시 및 사례 결과</h2>
       <p>아래는 실제 피난 훈련 프로그램을 적용한 예시입니다.</p>
       <canvas id="snapshot" width="300" height="300" style="margin: 20px auto; border-radius: 10px; border: 1px solid #ccc;"></canvas>
-      <img
-        src="/static/images/real-training-result.png"
-        alt="훈련 프로그램 실제 적용 결과 이미지"
-        style="max-width:600px; display:block; margin:20px auto; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);"
-      />
+      <img src="/static/images/real-training-result.png" alt="훈련 프로그램 실제 적용 결과 이미지" style="max-width:600px; display:block; margin:20px auto; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);"/>
     </div>
   </section>
   
-
-  <!-- 6번 섹션: 사용자 후기 (가상 후기 슬라이드) -->
+  <!-- 6번 섹션: 사용자 후기 (슬라이드) -->
   <section>
     <div class="card" id="reviews">
       <h2>6. 사용자 후기</h2>
@@ -482,6 +550,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
   <script>
+    // 예측 레이블 영어 -> 한글 매핑 (필요한 항목 추가)
+    const labelMapping = {
+      "left": "왼쪽",
+      "right": "오른쪽",
+      "up": "위",
+      "down": "아래",
+      "forward": "앞으로",
+      "backward": "뒤로",
+      "jump": "점프",
+      "stop": "정지"
+    };
+
     let model, webcam, ctx, labelContainer, maxPredictions;
     const colors = ["#2563eb", "#ef4444", "#10b981", "#f59e0b", "#6366f1", "#14b8a6", "#d97706", "#8b5cf6"];
     let cameraStartTime = null;
@@ -490,7 +570,7 @@
 
     window.onload = () => {
       loadModelKey();
-      // Intersection Observer: 카드 등장 애니메이션
+      // 카드 등장 애니메이션 (Intersection Observer)
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) entry.target.classList.add('visible');
@@ -511,7 +591,6 @@
       try {
         model = await tmPose.load(URL + "model.json", URL + "metadata.json");
         maxPredictions = model.getTotalClasses();
-
         labelContainer = document.getElementById("label-container");
         labelContainer.innerHTML = "";
         for (let i = 0; i < maxPredictions; i++) {
@@ -532,18 +611,15 @@
           item.appendChild(progressDiv);
           labelContainer.appendChild(item);
         }
-
         const videoElement = document.getElementById("webcam");
-        webcam = new tmPose.Webcam(300, 300, true, videoElement);
+        webcam = new tmPose.Webcam(400, 400, true, videoElement);
         await webcam.setup();
         await webcam.play();
         cameraStartTime = Date.now();
         isCameraActive = true;
         window.requestAnimationFrame(loop);
-
         const canvas = document.getElementById("canvas");
-        canvas.width = 300;
-        canvas.height = 300;
+        canvas.width = 400; canvas.height = 400;
         ctx = canvas.getContext("2d");
       } catch (error) {
         alert("모델을 불러오는 데 실패했습니다. 모델 키를 확인해주세요.");
@@ -573,7 +649,7 @@
       }
       if (cameraStartTime && isCameraActive) {
         const elapsed = ((Date.now() - cameraStartTime) / 1000).toFixed(1);
-        document.getElementById("time-display").innerText = elapsed + " sec";
+        document.getElementById("time-display").innerText = elapsed;
       }
     }
 
@@ -587,8 +663,9 @@
           action_prop = prob;
           action_index = i;
         }
-        document.getElementById("class-name-" + i).innerText =
-          prediction[i].className + ": " + prob.toFixed(2);
+        const engLabel = prediction[i].className.toLowerCase();
+        const korLabel = labelMapping[engLabel] || prediction[i].className;
+        document.getElementById("class-name-" + i).innerText = korLabel + ": " + prob.toFixed(2);
         document.getElementById("bar-" + i).style.width = (prob * 100).toFixed(0) + "%";
       }
       await fetch('/action?index=' + action_index).catch(err => console.log("서버 연결 실패:", err));
@@ -614,6 +691,13 @@
         currentSlide = (currentSlide + 1) % slides.length;
         slides[currentSlide].classList.add("visible");
       }, 4000);
+    }
+
+    // 게더타운 URL을 새 탭으로 여는 함수 (버튼명: '입장하기')
+    function openGatherTown() {
+      const url = document.getElementById("gathertownURL").value.trim();
+      if (!url) { alert("게더타운 URL을 입력해주세요."); return; }
+      window.open(url, '_blank');
     }
 
     function submitReview(event) {
